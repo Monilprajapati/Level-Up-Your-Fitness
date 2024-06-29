@@ -72,7 +72,7 @@ const InputBox = ({
               : () => setConfirmPassword(!confirmPassword)
           }
         >
-          {/* {id === "password" ? (
+          {id === "password" ? (
             showPassword ? (
               <FaEyeSlash />
             ) : (
@@ -82,7 +82,7 @@ const InputBox = ({
             <FaEyeSlash />
           ) : (
             <FaEye />
-          )} */}
+          )}
         </div>
       )}
     </div>
