@@ -1,13 +1,35 @@
-// import { useState } from 'react'
-import './App.css'
+import React, { useEffect } from "react";
+import CustomRoutes from "./routes/routes";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { checkAuthStatus } from "./app/slices/authSlice";
+import Navbar from "./components/Navbar";
 
-function App() {
+const App = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const isAuthenticated = useSelector((state) => state.isAuthenticated);
+  useEffect(() => {
+    dispatch(checkAuthStatus({ dispatch, navigate }));
+  }, []);
+
+  const isLoading = useSelector((state) => state.authReducer.isLoading);
 
   return (
     <>
-     Hello world
-    </>
-  )
-}
+      {isLoading ? (
+        <div className="w-screen h-screen flex justify-center items-center">
 
-export default App
+        </div>
+      ) : (
+        <>
+                <Navbar />
+                <CustomRoutes />
+        </>
+      )}
+    </>
+  );
+};
+
+export default App;
