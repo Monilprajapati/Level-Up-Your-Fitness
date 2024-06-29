@@ -7,6 +7,7 @@ import PrivateRoute from "./PrivateRoutes";
 import PublicRoute from "./PublicRoutes";
 import ExerciseDetail from "../components/ExerciseDetail";
 import UserDetailsForm from "../components/UserDetail";
+import AskQuestions from "../components/AskQuestions";
 export default function CustomRoutes() {
   return (
     <>
@@ -14,9 +15,9 @@ export default function CustomRoutes() {
         <Route
           path="/"
           element={
-            <PublicRoute>
+            <PrivateRoute>
               <Home />
-            </PublicRoute>
+            </PrivateRoute>
           }
         />
         <Route
@@ -28,11 +29,19 @@ export default function CustomRoutes() {
           }
         />
         <Route
+          path="/ask-questions"
+          element={
+            <PrivateRoute>
+              <AskQuestions />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/profile"
           element={
-            <PublicRoute>
+            <PrivateRoute>
               <UserDetailsForm />
-            </PublicRoute>
+            </PrivateRoute>
           }/>
         <Route
           path="/register"

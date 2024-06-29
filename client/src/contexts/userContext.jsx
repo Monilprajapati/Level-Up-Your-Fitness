@@ -8,11 +8,18 @@ const UserContextProvider = ({ children }) => {
   const isAuthenticated = useSelector(
     (state) => state.authReducer.isAuthenticated
   );
+  const [user,setUser] = useState({});
+
+  const [isLoggedIn, setLoggedIn] = useState(localStorage.getItem("token") ? true : false);
 
   return <UserContext.Provider value={{
     userId,
     setUserId,
     isAuthenticated,
+    isLoggedIn,
+    setLoggedIn,
+    setUser,
+    user
   }}>{children}</UserContext.Provider>;
 };
 

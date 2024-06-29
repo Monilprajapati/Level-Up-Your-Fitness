@@ -6,7 +6,8 @@ import {
   ExerciseOptions,
 } from "../utils/fetchData";
 import Detail from "../components/Detail";
-import Loader from "../components/Loader";
+import {Blocks} from "react-loader-spinner"
+
 const ExerciseDetail = () => {
   const [exerciseDetail, setExercisesDetail] = useState({});
   const [exercseVideos, setExerciseVideos] = useState([]);
@@ -55,7 +56,18 @@ const ExerciseDetail = () => {
   return (
     <div>
       {loaded ? (
-        <Loader />
+       <div className="h-screen flex justify-center items-center">
+         <Blocks
+        height="100"
+        width="100"
+        color="#4fa94d"
+        ariaLabel="blocks-loading"
+        wrapperStyle={{}}
+        wrapperClass="blocks-wrapper"
+        visible={true}
+        />
+       </div>
+
       ) : (
         <Box>
           <Detail exerciseDetail={exerciseDetail} />
