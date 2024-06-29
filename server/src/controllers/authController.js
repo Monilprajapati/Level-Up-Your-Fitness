@@ -43,23 +43,23 @@ const register = asyncHandler(
 const verify = asyncHandler(
     async (req, res) => {
         const { otp, _id } = req.body;
-
+        console.log("__idddddddd:" + _id);
         if (!_id || !otp)
             throw new ApiError(400, "Empty OTP details are not allowed!");
 
-        const OtpVerificationRecords = await OtpVerification.find({ _id });
-        console.log(OtpVerificationRecords)
-        if (!OtpVerificationRecords.length)
-            throw new ApiError(400, "Account record doesn't exist or has been verified already. Please sign up or log in!");
+        const OtpVerificationRecords = await OtpVerification.findOne({ userId: _id });
+        console.log("sadasdasdfa: " + OtpVerificationRecords.otp);
+        // if (!OtpVerificationRecords.length)
+        //     throw new ApiError(400, "Account record doesn't exist or has been verified already. Please sign up or log in!");
 
-        const { expiresAt, otp: storedOtp } = OtpVerificationRecords[0];
+        // const { expiresAt, otp: storedOtp } = OtpVerificationRecords[0];
 
-        if (expiresAt < Date.now()) {
+        if (OtpVerificationRecords.expiresAt < Date.now()) {
             await OtpVerification.deleteMany({ _id });
             throw new ApiError(400, "Code has expired, please try again!");
         }
 
-        if (otp === storedOtp) {
+        if (otp === OtpVerificationRecords.otp) {
             const user = await User.findById(_id);
             if (!user) throw new ApiError(400, "User not found");
 
