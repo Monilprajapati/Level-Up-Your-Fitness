@@ -15,20 +15,34 @@ const InputBox = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState(false);
+  const renderIcon = () => {
+    switch (icon) {
+      case "email":
+        return <MdOutlineMailOutline className="text-gray-400" />;
+      case "password":
+        return <RiLockPasswordFill className="text-gray-400" />;
+      case "age":
+        return <span className="text-gray-400">🎂</span>;
+      case "gender":
+        return <span className="text-gray-400">♂️♀️</span>;
+      case "weight":
+        return <span className="text-gray-400">⚖️</span>;
+      case "height":
+        return <span className="text-gray-400">📏</span>;
+      case "goals":
+        return <span className="text-gray-400">🎯</span>;
+      case "health":
+        return <span className="text-gray-400">🩺</span>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
-      <div className="relative w-full mb-4 flex items-center">
-        <div className="input-icon">
-          {(() => {
-            switch (icon) {
-              case "email":
-                return <MdOutlineMailOutline className="text-gray-400" />;
-              case "password":
-                return <RiLockPasswordFill className="text-gray-400" />;
-              default:
-                return null;
-            }
-          })()}
+      <div className="relative w-full mb-4">
+        <div className="absolute inset-y-0 left-0 pl-3 ml-1 flex items-center pointer-events-none">
+          {renderIcon()}
         </div>
         <input
           id={id}
@@ -40,8 +54,8 @@ const InputBox = ({
                   ? "text"
                   : "password"
                 : confirmPassword
-                ? "text"
-                : "password"
+                  ? "text"
+                  : "password"
               : type
           }
           defaultValue={value}
