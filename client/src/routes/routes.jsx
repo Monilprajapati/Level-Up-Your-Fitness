@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import UserAuthForm from "../pages/UserAuthForm";
 import Home from "../pages/Home";
-import VerifyOTP from "../pages/VerifyOTP";
+import OTPValidationPage from "../pages/VerifyOTP";
 import PrivateRoute from "./PrivateRoutes";
 import PublicRoute from "./PublicRoutes";
 export default function CustomRoutes() {
@@ -36,7 +36,7 @@ export default function CustomRoutes() {
           }
         />
 
-        <Route path="/verify" element={<VerifyOTP />} />
+        <Route path="/verify" element={<OTPValidationPage />} />
 
         <Route
           path="/forgot-password"

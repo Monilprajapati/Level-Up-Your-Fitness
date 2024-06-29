@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { checkAuthStatus } from "./app/slices/authSlice";
 import Navbar from "./components/Navbar";
+import { UserContextProvider } from "./contexts/userContext";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -19,13 +20,13 @@ const App = () => {
   return (
     <>
       {isLoading ? (
-        <div className="w-screen h-screen flex justify-center items-center">
-
-        </div>
+        <div className="w-screen h-screen flex justify-center items-center"></div>
       ) : (
         <>
-                <Navbar />
-                <CustomRoutes />
+          <UserContextProvider>
+            <Navbar />
+            <CustomRoutes />
+          </UserContextProvider>
         </>
       )}
     </>

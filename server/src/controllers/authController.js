@@ -43,7 +43,7 @@ const register = asyncHandler(
 const verify = asyncHandler(
     async (req, res) => {
         const { otp, _id } = req.body;
-
+        console.log(otp)
         if (!_id || !otp)
             throw new ApiError(400, "Empty otp details are not allowed!");
 
@@ -52,7 +52,7 @@ const verify = asyncHandler(
         if (!OtpVerificationRecords)
             throw new ApiError(400, "Account record doesn't exist or has been verified already . Please sign up or logIn!")
 
-        const { expiresAt } = OtpVerificationRecords[0];
+        const expiresAt = OtpVerificationRecords.expiresAt;
 
         if (expiresAt < Date.now()) {
             await OtpVerification.deleteMany({ _id });

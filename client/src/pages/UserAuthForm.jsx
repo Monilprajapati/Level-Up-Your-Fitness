@@ -5,9 +5,10 @@ import AnimationWrapper from "../common/AnimationWrapper";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import authUser from "../services/authServices";
-import { setIsAuthenticated, checkAuthStatus } from "../app/slices/authSlice";
+import { setIsAuthenticated, checkAuthStatus, setUser } from "../app/slices/authSlice";
 import { useDispatch } from "react-redux";
 import Dropdown from "../components/InputDropdown";
+import { useUserContext } from "../contexts/userContext";
 
 const UserAuthForm = ({ type }) => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const UserAuthForm = ({ type }) => {
     password: "",
     confirmPassword: "",
   });
+  const {setUserId} = useUserContext();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
@@ -26,6 +28,7 @@ const UserAuthForm = ({ type }) => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
 
   const userAuth = async (serverRoute, formData) => {
     if (serverRoute === "login") {
@@ -58,20 +61,23 @@ const UserAuthForm = ({ type }) => {
     } else {
       try {
         const response = await authUser(serverRoute, formData);
-        toast.success(response.message, {
-          duration: 900,
-        });
-        console.log("Data : ", response.data.token);
-        localStorage.setItem("token", response.data.token);
+        // toast.success(response.message, {
+        //   duration: 900,
+        // });
+        setUserId(response);
+        // localStorage.setItem("token", response.data.token);
+        toast.success("Verification code sent to your email", formData.email)
         setTimeout(() => {
           navigate("/verify");
         }, 900);
       } catch (error) {
-        let { response } = error;
-        response = response.data;
-        toast.error(response.message, {
-          duration: 900,
-        });
+        console.log("error: ", error)
+        // let { response } = error;
+        // console.log("Error Response: ", response)
+        // response = response.data;
+        // toast.error(response.message, {
+        //   duration: 900,
+        // });
       }
     }
   };
