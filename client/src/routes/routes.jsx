@@ -5,6 +5,7 @@ import Home from "../pages/Home";
 import OTPValidationPage from "../pages/VerifyOTP";
 import PrivateRoute from "./PrivateRoutes";
 import PublicRoute from "./PublicRoutes";
+import ExerciseDetail from "../components/ExerciseDetail";
 export default function CustomRoutes() {
   return (
     <>
@@ -17,6 +18,7 @@ export default function CustomRoutes() {
             </PublicRoute>
           }
         />
+        <Route path={`/exercise/:id`} element={<ExerciseDetail />} />
 
         <Route
           path="/register"
