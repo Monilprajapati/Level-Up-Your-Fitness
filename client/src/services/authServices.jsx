@@ -9,8 +9,7 @@ const authUser = async (serverRoute, formData) => {
       `${URL}/api/v1/auth/${serverRoute}`,
       formData
     );
-    console.log("Response : ", response.data.data.isUserCreated._id)
-    return response.data.data.isUserCreated._id;
+    return response.data;
   } catch (error) {
     throw error;
   }
