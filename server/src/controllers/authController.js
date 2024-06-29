@@ -73,7 +73,7 @@ const verify = asyncHandler(
             res
                 .status(200)
                 .cookie("token", token, options)
-                .json(new ApiResponse(200, "cookie sent & userVerified"));
+                .json(new ApiResponse(200, {}, "cookie sent & userVerified"));
         }
         throw new ApiError(400, "Invalid Code Passed!")
     }
@@ -116,8 +116,23 @@ const login = asyncHandler(
     }
 );
 
+const logout = asyncHandler(
+    async (req, res) => {
+        const options = {
+            httpOnly: true,
+            secure: true,
+        }
+
+        return res
+            .status(200)
+            .clearCookie("token", options)
+            .json(new ApiResponse(200, {}, "User logged out successfully"))
+    }
+);
+
 export {
     register,
     verify,
-    login
+    login,
+    logout
 };
