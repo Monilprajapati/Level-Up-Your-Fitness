@@ -2,7 +2,30 @@ import { Schema, model } from "mongoose";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { TOKEN_SECRET, TOKEN_EXPIRY } from "../config/serverConfig.js";
-import { type } from "os";
+
+const fitnessGoalSchema = new Schema({
+    goal: {
+        type: String,
+        enum: ['weight_loss', 'muscle_gain', 'endurance', 'flexibility', 'general_health'],
+        required: true
+    },
+    targetDate: {
+        type: Date,
+        required: true
+    }
+}, { _id: false });
+
+const healthConditionSchema = new Schema({
+    condition: {
+        type: String,
+        required: true
+    },
+    severity: {
+        type: String,
+        enum: ['mild', 'moderate', 'severe'],
+        required: true
+    }
+}, { _id: false });
 
 const userSchema = new Schema({
     firstname: {
@@ -29,10 +52,23 @@ const userSchema = new Schema({
     verified: {
         type: Boolean,
         default: false
+    },
+    age: Number,
+    gender: {
+        type: String,
+        enum: ['male', 'female', 'other']
+    },
+    weight: Number,
+    height: Number,
+    fitnessGoals: [fitnessGoalSchema],
+    healthConditions: [healthConditionSchema],
+    role: {
+        type: String,
+        enum: ['user', 'trainer', 'admin'],
+        default: 'user'
     }
 });
 
-// Pre-save hook to hash the password before saving
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();
     const saltRound = 10;
@@ -40,17 +76,16 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
-// Method to compare given password with the hashed password in the database
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
-// Method to generate a JWT token for the user
-userSchema.methods.generateToken = async function () {
-    return await jwt.sign(
+userSchema.methods.generateToken = function () {
+    return jwt.sign(
         {
-            _id: this.id,
-            email: this.email
+            _id: this._id,
+            email: this.email,
+            role: this.role
         },
         TOKEN_SECRET,
         {

@@ -3,7 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { sendMail } from "../utils/mailer.js";
 import { User } from "../models/userModel.js";
-import { userVerification } from "../models/userVerificationModel.js";
+import { OtpVerification } from "../models/otpModel.js";
 
 const register = asyncHandler(
     async (req, res) => {
@@ -24,40 +24,61 @@ const register = asyncHandler(
             verified: false
         });
 
-        const isUserCreated = await User.findById(user._id).select("-firstname -lastname -password");
+        const isUserCreated = await User.findById(user._id).select("-firstname -lastname -password -verified -role -fitnessGoals -healthConditions");
         if (!isUserCreated)
             throw new ApiError(500, "Something went wrong while registering user");
 
+        console.log(isUserCreated);
+
         const token = await user.generateToken();
 
-        sendMail(user._id, email, res);
+        await sendMail(user._id, email, res);
 
         return res.status(200).json(
-            new ApiResponse(200, { token }, "User registered successfully")
+            new ApiResponse(200, { token, isUserCreated }, "User registered successfully")
         );
     }
 );
 
-const verify = asyncHandler(async (req, res) => {
-    const { userId } = req.params;
+const verify = asyncHandler(
+    async (req, res) => {
+        const { otp, _id } = req.body;
 
-    const userVerificationRecord = await userVerification.findOne({ userId });
+        if (!_id || !otp)
+            throw new ApiError(400, "Empty otp details are not allowed!");
 
-    if (!userVerificationRecord) {
-        throw new ApiError(400, "Invalid verification request");
+        const OtpVerificationRecords = await OtpVerification.find({ _id });
+
+        if (!OtpVerificationRecords)
+            throw new ApiError(400, "Account record doesn't exist or has been verified already . Please sign up or logIn!")
+
+        const { expiresAt } = OtpVerificationRecords[0];
+
+        if (expiresAt < Date.now()) {
+            await OtpVerification.deleteMany({ _id });
+            throw new ApiError(400, "Code Has Expired , Please Try again!");
+        }
+
+        if (otp === OtpVerificationRecords.otp) {
+
+            const token = await User.generateToken();
+
+            await User.updateOne({ _id: _id }, { verified: true });
+            await OtpVerification.deleteOne({ _id });
+
+            const options = {
+                httpOnly: true,
+                secure: true,
+            };
+            res
+                .status(200)
+                .cookie("token", token, options)
+                .json(new ApiResponse(200, "cookie sent & userVerified"));
+        }
+        throw new ApiError(400, "Invalid Code Passed!")
     }
+);
 
-    if (userVerificationRecord.expiresAt < Date.now()) {
-        await userVerification.deleteOne({ userId });
-        await User.deleteOne({ _id: userId });
-        throw new ApiError(400, "Verification link has expired");
-    }
-
-    await User.updateOne({ _id: userId }, { verified: true });
-    await userVerification.deleteOne({ userId });
-
-    return res.status(200).json(new ApiResponse(200, {}, "Email verified successfully"));
-});
 
 const login = asyncHandler(
     async (req, res) => {
@@ -69,6 +90,11 @@ const login = asyncHandler(
         const user = await User.findOne({ email });
         if (!user)
             throw new ApiError(404, "User with email does not exist");
+
+        if (!user.verified) {
+            sendMail(email, await user.generateToken())
+            throw new ApiError(401, "User is not verified", await user.generateToken())
+        }
 
         const isPasswordCorrect = await user.isPasswordCorrect(password);
         if (!isPasswordCorrect)
