@@ -43,25 +43,27 @@ const register = asyncHandler(
 const verify = asyncHandler(
     async (req, res) => {
         const { otp, _id } = req.body;
-        console.log(otp)
+        console.log("__idddddddd:" + _id);
         if (!_id || !otp)
-            throw new ApiError(400, "Empty otp details are not allowed!");
+            throw new ApiError(400, "Empty OTP details are not allowed!");
 
-        const OtpVerificationRecords = await OtpVerification.find({ _id });
+        const OtpVerificationRecords = await OtpVerification.findOne({ userId: _id });
+        console.log("sadasdasdfa: " + OtpVerificationRecords.otp);
+        // if (!OtpVerificationRecords.length)
+        //     throw new ApiError(400, "Account record doesn't exist or has been verified already. Please sign up or log in!");
 
-        if (!OtpVerificationRecords)
-            throw new ApiError(400, "Account record doesn't exist or has been verified already . Please sign up or logIn!")
+        // const { expiresAt, otp: storedOtp } = OtpVerificationRecords[0];
 
-        const expiresAt = OtpVerificationRecords.expiresAt;
-
-        if (expiresAt < Date.now()) {
+        if (OtpVerificationRecords.expiresAt < Date.now()) {
             await OtpVerification.deleteMany({ _id });
-            throw new ApiError(400, "Code Has Expired , Please Try again!");
+            throw new ApiError(400, "Code has expired, please try again!");
         }
 
         if (otp === OtpVerificationRecords.otp) {
+            const user = await User.findById(_id);
+            if (!user) throw new ApiError(400, "User not found");
 
-            const token = await User.generateToken();
+            const token = user.generateToken();
 
             await User.updateOne({ _id: _id }, { verified: true });
             await OtpVerification.deleteOne({ _id });
@@ -70,12 +72,14 @@ const verify = asyncHandler(
                 httpOnly: true,
                 secure: true,
             };
-            res
+
+            return res
                 .status(200)
                 .cookie("token", token, options)
-                .json(new ApiResponse(200, {}, "cookie sent & userVerified"));
+                .json(new ApiResponse(200, {}, "Cookie sent & user verified"));
         }
-        throw new ApiError(400, "Invalid Code Passed!")
+
+        throw new ApiError(400, "Invalid code passed!");
     }
 );
 

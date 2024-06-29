@@ -71,13 +71,12 @@ const UserAuthForm = ({ type }) => {
           navigate("/verify");
         }, 900);
       } catch (error) {
-        console.log("error: ", error)
-        // let { response } = error;
-        // console.log("Error Response: ", response)
-        // response = response.data;
-        // toast.error(response.message, {
-        //   duration: 900,
-        // });
+        let {data} = error.response;
+        console.log("Error Response: ", data)
+        let message = data.message;
+        toast.error(message, {
+          duration: 900,
+        });
       }
     }
   };

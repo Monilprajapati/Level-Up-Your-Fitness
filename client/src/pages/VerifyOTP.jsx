@@ -3,12 +3,15 @@ import { Link } from "react-router-dom";
 import { useUserContext } from "../contexts/userContext";
 import authUser from "../services/authServices";
 import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 // import { authUser } from "../services/authServices";
 
 const OTPValidationPage = () => {
   const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const {userId} = useUserContext();
+
+  const navigate= useNavigate()
 
   const inputRefs = useRef([]);
   console.log("User ID : ", userId)
