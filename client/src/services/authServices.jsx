@@ -7,7 +7,8 @@ const authUser = async (serverRoute, formData) => {
   try {
     const response = await axios.post(
       `${URL}/api/v1/auth/${serverRoute}`,
-      formData
+      formData,
+      {withCredentials:true}
     );
     return response.data;
   } catch (error) {

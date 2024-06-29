@@ -65,12 +65,15 @@ const verify = asyncHandler(
 
             const token = user.generateToken();
 
+            console.log("tokennnn: "+token)
+
             await User.updateOne({ _id: _id }, { verified: true });
             await OtpVerification.deleteOne({ _id });
 
             const options = {
                 httpOnly: true,
                 secure: true,
+                sameSite: "none"
             };
 
             return res
@@ -111,8 +114,9 @@ const login = asyncHandler(
         const options = {
             httpOnly: true,
             secure: true,
+            sameSite: "none"
         };
-
+        console.log("tokennnn: "+token)
         return res
             .status(200)
             .cookie("token", token, options)
