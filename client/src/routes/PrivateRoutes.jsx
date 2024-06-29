@@ -1,14 +1,16 @@
 import { useSelector } from "react-redux"
-import Dashboard from "../pages/Dashboard"
+import { useUserContext } from "../contexts/userContext"
+import Home from "../pages/Home"
 
 const PrivateRoute = ({ children }) => {
 
   const isAuthenticated = useSelector(state => state.authReducer.isAuthenticated)
+  const {isLoggedIn} = useUserContext();
   // console.log("Private Route : ", isAuthenticated)
-  return isAuthenticated ?
+  return isLoggedIn ?
     <>{children}</>
     :
-    <Dashboard />
+    <Home />
 }
 
 export default PrivateRoute

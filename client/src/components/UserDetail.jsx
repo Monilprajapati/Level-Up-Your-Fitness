@@ -67,8 +67,8 @@ const UserDetailsForm = () => {
   ];
 
   return (
-    <div className="flex justify-center w-full pt-4 px-10">
-      <div className="flex flex-col w-1/2 px-10 items-center justify-center bg-gray-100">
+    <div className="flex justify-center flex-col lg:flex-row w-full pt-4 px-10">
+      <div className="flex flex-col ld:w-1/2 lg:px-10 items-center justify-center bg-gray-100">
         <h2 className="text-4xl mt-5 font-bold mb-6 text-center">
           User Details
         </h2>
@@ -191,7 +191,7 @@ const UserDetailsForm = () => {
           </button>
         )}
       </div>
-     <div className="w-1/2">
+     <div className="lg:w-1/2">
         <h1>Get your personalized diet plan</h1>
         <button className="btn-dark mt-5 center">
             Get Diet Plan

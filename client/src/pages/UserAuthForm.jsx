@@ -67,7 +67,7 @@ const UserAuthForm = ({ type }) => {
         // });
         console.log(response)
         setUserId(response.data.isUserCreated._id);
-        // localStorage.setItem("token", response.data.token);
+        localStorage.setItem("token", response.data.token);
         toast.success("Verification code sent to your email", formData.email)
         setTimeout(() => {
           navigate("/verify");
