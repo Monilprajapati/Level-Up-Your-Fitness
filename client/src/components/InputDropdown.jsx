@@ -1,13 +1,14 @@
 import React from "react";
 import { HiOutlineSelector } from "react-icons/hi";
 
-const Dropdown = ({ id, name, value, options, handleChange }) => {
+const Dropdown = ({ id, disable, name, value, options, handleChange }) => {
   return (
     <div className="relative w-full mb-4">
       <div className="input-icon">
         <HiOutlineSelector className="text-gray-400" />
       </div>
       <select
+        disabled={disable}
         id={id}
         name={name}
         value={value}

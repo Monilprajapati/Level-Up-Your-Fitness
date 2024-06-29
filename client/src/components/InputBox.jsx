@@ -5,6 +5,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import { FaEye } from "react-icons/fa";
 
 const InputBox = ({
+  disable,
   name,
   type,
   id,
@@ -45,6 +46,7 @@ const InputBox = ({
           {renderIcon()}
         </div>
         <input
+          disabled={disable}
           id={id}
           name={name}
           type={
