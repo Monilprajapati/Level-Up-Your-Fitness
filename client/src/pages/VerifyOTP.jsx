@@ -4,13 +4,15 @@ import { useUserContext } from "../contexts/userContext";
 import authUser from "../services/authServices";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setIsAuthenticated, checkAuthStatus } from "../app/slices/authSlice";
 // import { authUser } from "../services/authServices";
 
 const OTPValidationPage = () => {
   const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const {userId} = useUserContext();
-
+  const dispatch = useDispatch();
   const navigate= useNavigate()
 
   const inputRefs = useRef([]);
@@ -49,21 +51,20 @@ const OTPValidationPage = () => {
     console.log(otp)
     try {
       const data = await authUser("verify", { otp, _id: userId });
-      console.log("Verify : ", data);
-      console.log("user id: ", userId)
       toast.success(data.message, {
         duration: 900,
       });
       setTimeout(() => {
-        localStorage.setItem("token", data.data.token);
+        // localStorage.setItem("token", data.data.token);
         dispatch(setIsAuthenticated(true));
         dispatch(checkAuthStatus({ dispatch, navigate }));
+        navigate("/login");
       }, 900);
     } catch (error) {
       console.log("Error : ", error);
       if (error.response.data.message == "User is not verified") {
         toast.error(error.response.data.message);
-        localStorage.setItem("token", error.response.data.data);
+        // localStorage.setItem("token", error.response.data.data);
         setTimeout(() => {
           navigate("/verify");
         }, 900);

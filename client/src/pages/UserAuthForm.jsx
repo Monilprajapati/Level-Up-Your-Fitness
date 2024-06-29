@@ -40,6 +40,7 @@ const UserAuthForm = ({ type }) => {
           duration: 900,
         });
         setTimeout(() => {
+          navigate("/");
           localStorage.setItem("token", response.data.token);
           dispatch(setIsAuthenticated(true));
           dispatch(checkAuthStatus({ dispatch, navigate }));
@@ -64,7 +65,8 @@ const UserAuthForm = ({ type }) => {
         // toast.success(response.message, {
         //   duration: 900,
         // });
-        setUserId(response);
+        console.log(response)
+        setUserId(response.data.isUserCreated._id);
         // localStorage.setItem("token", response.data.token);
         toast.success("Verification code sent to your email", formData.email)
         setTimeout(() => {
