@@ -81,7 +81,17 @@ const UserAuthForm = ({ type }) => {
 
     let serverRoute = type === "login" ? "login" : "register";
 
-    const { email, password } = formData;
+    const { email, password, role, firstname, lastname } = formData;
+
+    if (type === "register") {
+      if (!firstname.trim()) {
+        return toast.error("First Name is required");
+      }
+      if (!lastname.trim()) {
+        return toast.error("Last Name is required");
+      }
+    }
+
     if (!email.length) {
       return toast.error("Email is required");
     }
@@ -96,6 +106,7 @@ const UserAuthForm = ({ type }) => {
         "Password must be between 6 to 20 characters and contain at least one numeric digit, one uppercase and one lowercase letter"
       );
     }
+
     if (type === "register") {
       if (!formData.confirmPassword.length) {
         return toast.error("Confirm Password is required");
@@ -109,10 +120,10 @@ const UserAuthForm = ({ type }) => {
     }
   };
 
-  const options = [
-    { label: "Option 1", value: "option1" },
-    { label: "Option 2", value: "option2" },
-    { label: "Option 3", value: "option3" },
+  const roleOptions = [
+    { label: "User", value: "user" },
+    { label: "Trainer", value: "trainer" },
+    { label: "Admin", value: "admin" },
   ];
 
   return (
@@ -150,7 +161,7 @@ const UserAuthForm = ({ type }) => {
                 id="role"
                 name="role"
                 value={formData.role}
-                options={options}
+                options={roleOptions}
                 handleChange={handleChange}
               />
             </>
