@@ -24,7 +24,7 @@ const register = asyncHandler(
             verified: false
         });
 
-        const isUserCreated = await User.findById(user._id).select("-firstname -lastname -password -verified -role -fitnessGoals -healthConditions");
+        const isUserCreated = await User.findById(user._id).select("-password");
         if (!isUserCreated)
             throw new ApiError(500, "Something went wrong while registering user");
 
@@ -65,12 +65,15 @@ const verify = asyncHandler(
 
             const token = user.generateToken();
 
+            console.log("tokennnn: " + token)
+
             await User.updateOne({ _id: _id }, { verified: true });
             await OtpVerification.deleteOne({ _id });
 
             const options = {
                 httpOnly: true,
                 secure: true,
+                sameSite: "none"
             };
 
             return res
@@ -86,7 +89,7 @@ const verify = asyncHandler(
 
 const login = asyncHandler(
     async (req, res) => {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
 
         if ([email, password].some(field => field?.trim() === ""))
             throw new ApiError(400, 'Please provide all required fields');
@@ -111,8 +114,9 @@ const login = asyncHandler(
         const options = {
             httpOnly: true,
             secure: true,
+            sameSite: "none"
         };
-
+        console.log("tokennnn: " + token)
         return res
             .status(200)
             .cookie("token", token, options)

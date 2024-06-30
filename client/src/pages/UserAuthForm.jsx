@@ -19,7 +19,7 @@ const UserAuthForm = ({ type }) => {
     password: "",
     confirmPassword: "",
   });
-  const {setUserId} = useUserContext();
+  const {setUserId, setUser} = useUserContext();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email

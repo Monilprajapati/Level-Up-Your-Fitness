@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diet and Workouts Recommendations</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .container { background-color: white; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
+        h3 { color: #28a745; margin-top: 20px; }
+        p { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Diet and Workouts Recommendations</h1>
+        
+        {% if error_message %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_message }}
+        </div>
+        {% else %}
+            {% if restaurant_names %}
+            <h3>Restaurants Recommendations</h3>
+            {% for i in restaurant_names %}
+            <p>{{ i }}</p>
+            {% endfor %}
+            {% endif %}
+
+            {% if breakfast_names %}
+            <h3>Breakfast</h3>
+            {% for i in breakfast_names %}
+            <p>{{ i }}</p>
+            {% endfor %}
+            {% endif %}
+
+            {% if dinner_names %}
+            <h3>Dinners</h3>
+            {% for i in dinner_names %}
+            <p>{{ i }}</p>
+            {% endfor %}
+            {% endif %}
+
+            {% if workout_names %}
+            <h3>Workout Plans</h3>
+            {% for i in workout_names %}
+            <p>{{ i }}</p>
+            {% endfor %}
+            {% endif %}
+
+            {% if additional_considerations %}
+            <h3>Additional Considerations</h3>
+            {% for i in additional_considerations %}
+            <p>{{ i }}</p>
+            {% endfor %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

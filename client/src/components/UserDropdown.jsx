@@ -14,6 +14,7 @@ const UserDropdown = ({mobile}) => {
   const [open, setOpen] = useState(false);
     const {user, setLoggedIn} = useUserContext();
     const navigate = useNavigate();
+    console.log(user)
 //   const user = useSelector((state) => state.authReducer.user);
   // console.log(user);
   const links = [
@@ -39,7 +40,7 @@ const UserDropdown = ({mobile}) => {
           >
             <span className="flex gap-1.5 items-center">
                 <CiUser className="w-6 h-6 rounded-full" />
-              <span className="font-medium">{user?.firstname}</span>
+              <span className="font-medium">Monil</span>
             </span>
             <div>
               {open ? (

@@ -3,30 +3,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { TOKEN_SECRET, TOKEN_EXPIRY } from "../config/serverConfig.js";
 
-const fitnessGoalSchema = new Schema({
-    goal: {
-        type: String,
-        enum: ['weight_loss', 'muscle_gain', 'endurance', 'flexibility', 'general_health'],
-        required: true
-    },
-    targetDate: {
-        type: Date,
-        required: true
-    }
-}, { _id: false });
-
-const healthConditionSchema = new Schema({
-    condition: {
-        type: String,
-        required: true
-    },
-    severity: {
-        type: String,
-        enum: ['mild', 'moderate', 'severe'],
-        required: true
-    }
-}, { _id: false });
-
 const userSchema = new Schema({
     firstname: {
         type: String,
@@ -60,8 +36,14 @@ const userSchema = new Schema({
     },
     weight: Number,
     height: Number,
-    fitnessGoals: [fitnessGoalSchema],
-    healthConditions: [healthConditionSchema],
+    veg:{
+        type: String,
+        enum: ['veg', 'nonveg']
+    },
+    generic_disease:String,
+    food_type:String,
+    allergies:String,
+    region:String,
     role: {
         type: String,
         enum: ['user', 'trainer', 'admin'],

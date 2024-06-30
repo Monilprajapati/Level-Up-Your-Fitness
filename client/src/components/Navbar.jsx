@@ -12,7 +12,8 @@ const Navbar = () => {
   const authStates = useSelector((state) => state.authReducer.isAuthenticated);
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn } = useUserContext();
+  const { isLoggedIn, user } = useUserContext();
+
   return (
     <>
       <nav className="navbar font-lato font-semibold">

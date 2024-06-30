@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import InputBox from "./InputBox";
 import Dropdown from "./InputDropdown";
+import SuggestionsComponent from "./SuggestionsComponent";
 
 const UserDetailsForm = () => {
   const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ const UserDetailsForm = () => {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -109,14 +111,14 @@ const UserDetailsForm = () => {
           icon="age"
           handleChange={handleChange}
         />
-        <Dropdown
+        {/* <Dropdown
           disable={!isEditing}
           id="gender"
           name="gender"
           value={formData.gender}
           options={roleOptions}
           handleChange={handleChange}
-        />
+        /> */}
         <div className="flex w-full gap-2 flex-row">
           <InputBox
             disable={!isEditing}
@@ -193,9 +195,11 @@ const UserDetailsForm = () => {
       </div>
      <div className="lg:w-1/2">
         <h1>Get your personalized diet plan</h1>
-        <button className="btn-dark mt-5 center">
+        <button className="btn-dark mt-5 center" onClick={() => setShowSuggestions(!showSuggestions)}>
             Get Diet Plan
           </button>
+          {showSuggestions && <SuggestionsComponent />}   
+
      </div>
      
     </div>

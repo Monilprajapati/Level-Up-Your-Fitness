@@ -15,7 +15,7 @@ export default function CustomRoutes() {
         <Route
           path="/"
           element={
-            <PrivateRoute>
+          <PrivateRoute>
               <Home />
             </PrivateRoute>
           }
@@ -23,9 +23,9 @@ export default function CustomRoutes() {
         <Route
           path="/exercise/:id"
           element={
-            <PublicRoute>
+            <PrivateRoute>
               <ExerciseDetail />
-            </PublicRoute>
+            </PrivateRoute>
           }
         />
         <Route
