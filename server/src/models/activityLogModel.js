@@ -26,4 +26,4 @@ const ActivityLogSchema = new Schema({
 
 });
 
-const ActivityLogSchema= model('ActivityLog', ActivityLogSchema);
+export const activityLog= model('ActivityLog', ActivityLogSchema);
