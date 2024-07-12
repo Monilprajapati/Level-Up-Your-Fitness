@@ -1,18 +1,23 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
+from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
 from langchain_google_genai import GoogleGenerativeAI
 from langchain.chains import LLMChain
 import re
 import google.generativeai as genai
 
-# Set up your Gemini API key
-os.environ['GOOGLE_API_KEY'] = 'AIzaSyAIHpltEk3Hr39dGWjNbnnUinzQKiaJbmU'
+load_dotenv()
 
+# Set up your Gemini API key
+
+google_api_key = os.getenv("GOOGLE_API_KEY")
 # Configure the Gemini model
-genai.configure(api_key=os.environ['GOOGLE_API_KEY'])
+genai.configure(api_key=google_api_key)
 
 app = Flask(__name__)
+CORS(app)
 
 # Initialize the Gemini model
 llm_resto = GoogleGenerativeAI(model="gemini-pro", temperature=0.6)
@@ -46,64 +51,54 @@ def clean_and_process_list(lst):
     cleaned_items = []
     for item in items:
         if item.strip() and not item.lower().startswith(('restaurants:', 'breakfast:', 'dinners:', 'workout plans:', 'additional considerations:')):
-            # Remove asterisks, bold markdown syntax, and hyphens
-            cleaned_item = item.strip().replace('*', '').replace('**', '').replace('-', '').strip()
-            # Only add non-empty items
+            cleaned_item = item.strip().replace('', '').replace('*', '').replace('-', '').strip()
             if cleaned_item:
                 cleaned_items.append(cleaned_item)
     return cleaned_items
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/get_recommendations', methods=['POST'])
+def get_recommendations():
+    data = request.json
+    required_fields = ['age', 'gender', 'weight', 'height', 'veg_or_nonveg', 'disease', 'region', 'allergics', 'foodtype']
+    
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "Please provide all required fields."}), 400
 
-@app.route('/recommend', methods=['POST'])
-def recommend():
-    if request.method == "POST":
-        required_fields = ['age', 'gender', 'weight', 'height', 'veg_or_nonveg', 'disease', 'region', 'allergics', 'foodtype']
-        if not all(field in request.form for field in required_fields):
-            return jsonify({"error": "Please fill all required fields."}), 400
+    try:
+        chain_resto = LLMChain(llm=llm_resto, prompt=prompt_template_resto)
+        results = chain_resto.run(data)
 
-        input_data = {field: request.form[field] for field in required_fields}
+        sections = {
+            'restaurant_names': r'Restaurants:(.*?)(?:Breakfast|Dinners|Workout Plans|Additional Considerations|$)',
+            'breakfast_names': r'Breakfast:(.*?)(?:Dinners|Workout Plans|Additional Considerations|$)',
+            'dinner_names': r'Dinners:(.*?)(?:Workout Plans|Additional Considerations|$)',
+            'workout_names': r'Workout Plans:(.*?)(?:Additional Considerations|$)',
+            'additional_considerations': r'Additional Considerations:(.*?)$'
+        }
 
-        try:
-            chain_resto = LLMChain(llm=llm_resto, prompt=prompt_template_resto)
-            results = chain_resto.run(input_data)
+        processed_data = {key: clean_and_process_list(re.findall(pattern, results, re.DOTALL | re.IGNORECASE))
+                          for key, pattern in sections.items()}
 
-            sections = {
-                'restaurant_names': r'Restaurants:(.*?)(?:Breakfast|Dinners|Workout Plans|Additional Considerations|$)',
-                'breakfast_names': r'Breakfast:(.*?)(?:Dinners|Workout Plans|Additional Considerations|$)',
-                'dinner_names': r'Dinners:(.*?)(?:Workout Plans|Additional Considerations|$)',
-                'workout_names': r'Workout Plans:(.*?)(?:Additional Considerations|$)',
-                'additional_considerations': r'Additional Considerations:(.*?)$'
-            }
+        processed_data = {k: v for k, v in processed_data.items() if v}
 
-            data = {key: clean_and_process_list(re.findall(pattern, results, re.DOTALL | re.IGNORECASE))
-                    for key, pattern in sections.items()}
+        if 'restaurant_names' not in processed_data or not processed_data['restaurant_names']:
+            processed_data['restaurant_names'] = ["Please consult a local directory for restaurant recommendations."]
 
-            data = {k: v for k, v in data.items() if v}
+        if not processed_data:
+            return jsonify({"error": "Sorry, we couldn't generate any recommendations. Please try again."}), 500
 
-            if 'restaurant_names' not in data or not data['restaurant_names']:
-                data['restaurant_names'] = ["Please consult a local directory for restaurant recommendations."]
+        response = {
+            "restaurants": processed_data.get('restaurant_names', []),
+            "breakfast": processed_data.get('breakfast_names', []),
+            "dinners": processed_data.get('dinner_names', []),
+            "workout_plans": processed_data.get('workout_names', []),
+            "additional_considerations": processed_data.get('additional_considerations', [])
+        }
 
-            if not data:
-                return jsonify({"error": "Sorry, we couldn't generate any recommendations. Please try again."}), 500
+        return jsonify(response), 200
 
-            # Prepare the JSON response
-            response = {
-                "restaurants": data.get('restaurant_names', []),
-                "breakfast": data.get('breakfast_names', []),
-                "dinners": data.get('dinner_names', []),
-                "workout_plans": data.get('workout_names', []),
-                "additional_considerations": data.get('additional_considerations', [])
-            }
-
-            return jsonify(response), 200
-
-        except Exception as e:
-            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
-
-    return jsonify({"error": "Method not allowed"}), 405
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

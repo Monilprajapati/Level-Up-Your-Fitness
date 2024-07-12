@@ -5,7 +5,11 @@ import AnimationWrapper from "../common/AnimationWrapper";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import authUser from "../services/authServices";
-import { setIsAuthenticated, checkAuthStatus, setUser } from "../app/slices/authSlice";
+import {
+  setIsAuthenticated,
+  checkAuthStatus,
+  setUser,
+} from "../app/slices/authSlice";
 import { useDispatch } from "react-redux";
 import Dropdown from "../components/InputDropdown";
 import { useUserContext } from "../contexts/userContext";
@@ -19,7 +23,7 @@ const UserAuthForm = ({ type }) => {
     password: "",
     confirmPassword: "",
   });
-  const {setUserId, setUser} = useUserContext();
+  const { setUserId, setUser } = useUserContext();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // regex for email
@@ -28,7 +32,6 @@ const UserAuthForm = ({ type }) => {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
 
   const userAuth = async (serverRoute, formData) => {
     if (serverRoute === "login") {
@@ -65,16 +68,16 @@ const UserAuthForm = ({ type }) => {
         // toast.success(response.message, {
         //   duration: 900,
         // });
-        console.log(response)
+        console.log(response);
         setUserId(response.data.isUserCreated._id);
         localStorage.setItem("token", response.data.token);
-        toast.success("Verification code sent to your email", formData.email)
+        toast.success("Verification code sent to your email", formData.email);
         setTimeout(() => {
           navigate("/verify");
         }, 900);
       } catch (error) {
-        let {data} = error.response;
-        console.log("Error Response: ", data)
+        let { data } = error.response;
+        console.log("Error Response: ", data);
         let message = data.message;
         toast.error(message, {
           duration: 900,
@@ -135,7 +138,7 @@ const UserAuthForm = ({ type }) => {
 
   return (
     <AnimationWrapper keyValue={type}>
-      <section className="h-cover flex items-center justify-center">
+      <section className="h-cover flex items-center justify-center px-5 md:px-0">
         <Toaster />
         <form className="max-h-[400px]" onSubmit={handleSubmit}>
           <h1 className="text-4xl font-lato capitalize text-center mb-20">
@@ -208,19 +211,30 @@ const UserAuthForm = ({ type }) => {
 
           <p className="mt-10 text-dark-grey text-xl text-center">
             {type === "login" ? (
-              <>
-                Don't have an account?
-                <Link
-                  to="/register"
-                  className="underline text-black text-xl ml-1"
-                >
-                  Register
-                </Link>
-              </>
+              <div className="flex gap-2 flex-col">
+                <span>
+                  Don't have an account?
+                  <Link
+                    to="/register"
+                    className="underline text-black text-md ml-1"
+                  >
+                    Register
+                  </Link>
+                </span>
+                <span>
+                  Don't remember your password?
+                  <Link
+                    to="/forgot-password"
+                    className="underline text-black text-md ml-1"
+                  >
+                    Forgot Password
+                  </Link>
+                </span>
+              </div>
             ) : (
               <>
                 Already have an account?
-                <Link to="/login" className="underline text-black text-xl ml-1">
+                <Link to="/login" className="underline text-black ml-1">
                   Login
                 </Link>
               </>

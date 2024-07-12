@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import InputBox from "./InputBox";
 import Dropdown from "./InputDropdown";
 import SuggestionsComponent from "./SuggestionsComponent";
+import { getRecommendations } from "../utils/flask";
+import { Blocks } from "react-loader-spinner";
 
 const UserDetailsForm = () => {
   const [formData, setFormData] = useState({
@@ -12,22 +14,41 @@ const UserDetailsForm = () => {
     gender: "",
     weight: "",
     height: "",
-    veg: "",
-    generic_disease: "",
-    food_type: "",
-    allergies: "",
+    veg_or_nonveg: "",
+    disease: "",
+    foodtype: "",
+    allergics: "",
     region: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false); 
-
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionData, setSuggestionData] = useState({});
+  const [loading, setLoading] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
+  };
+
+  const handleSuggestion = () => {
+    const { email, password, ...dataToSend } = formData;
+    const data = dataToSend;
+    console.log(data);
+    setLoading(true);
+    getRecommendations(data)
+      .then((recommendations) => {
+        console.log(recommendations);
+        setSuggestionData(recommendations);
+        setShowSuggestions(true);
+        setLoading(false);
+        // Here, you can update your frontend with the recommendations
+      })
+      .catch((error) => {
+        console.error("Failed to get recommendations:", error);
+      });
   };
 
   const handleSubmit = () => {
@@ -62,10 +83,16 @@ const UserDetailsForm = () => {
   ];
 
   const regionOptions = [
-    { value: "north", label: "North" },
-    { value: "south", label: "South" },
-    { value: "east", label: "East" },
-    { value: "west", label: "West" },
+    { value: "india", label: "India" },
+    { value: "usa", label: "USA" },
+    { value: "uk", label: "UK" },
+    { value: "australia", label: "Australia" },
+    { value: "canada", label: "Canada" },
+  ];
+
+  const foodOptions = [
+    { value: "fruits", label: "Fruits" },
+    { value: "vegetables", label: "Vegetables" },
   ];
 
   return (
@@ -111,14 +138,7 @@ const UserDetailsForm = () => {
           icon="age"
           handleChange={handleChange}
         />
-        {/* <Dropdown
-          disable={!isEditing}
-          id="gender"
-          name="gender"
-          value={formData.gender}
-          options={roleOptions}
-          handleChange={handleChange}
-        /> */}
+
         <div className="flex w-full gap-2 flex-row">
           <InputBox
             disable={!isEditing}
@@ -141,48 +161,58 @@ const UserDetailsForm = () => {
             handleChange={handleChange}
           />
         </div>
-        <Dropdown
-          disable={!isEditing}
-          id="region"
-          name="region"
-          value={formData.region}
-          options={regionOptions}
-          handleChange={handleChange}
-        />
+        <div className="flex w-full gap-2">
+          <Dropdown
+            disable={!isEditing}
+            id="region"
+            name="region"
+            value={formData.region}
+            options={regionOptions}
+            handleChange={handleChange}
+          />
+          <Dropdown
+            disable={!isEditing}
+            id="foodtype"
+            name="foodtype"
+            value={formData.foodtype}
+            options={foodOptions}
+            handleChange={handleChange}
+          />
+        </div>
         <div className="flex w-full flex-row gap-2">
           <Dropdown
             disable={!isEditing}
-            id="food_type"
-            name="food_type"
-            value={formData.food_type}
+            id="gender"
+            name="gender"
+            value={formData.gender}
             options={roleOptions}
             handleChange={handleChange}
           />
           <Dropdown
             disable={!isEditing}
-            id="veg"
-            name="veg"
-            value={formData.veg}
+            id="veg_or_nonveg"
+            name="veg_or_nonveg"
+            value={formData.veg_or_nonveg}
             options={vegNonVegOptions}
             handleChange={handleChange}
           />
         </div>
-          <Dropdown
-            disable={!isEditing}
-            id="generic_disease"
-            name="generic_disease"
-            value={formData.generic_disease}
-            options={diseaseOptions}
-            handleChange={handleChange}
-          />
-          <Dropdown
-            disable={!isEditing}
-            id="allergies"
-            name="allergies"
-            value={formData.allergies}
-            options={allergiesOptions}
-            handleChange={handleChange}
-          />
+        <Dropdown
+          disable={!isEditing}
+          id="disease"
+          name="disease"
+          value={formData.disease}
+          options={diseaseOptions}
+          handleChange={handleChange}
+        />
+        <Dropdown
+          disable={!isEditing}
+          id="allergics"
+          name="allergics"
+          value={formData.allergics}
+          options={allergiesOptions}
+          handleChange={handleChange}
+        />
         {isEditing ? (
           <button onClick={handleSubmit} className="btn-dark mt-5 center">
             Save
@@ -193,15 +223,30 @@ const UserDetailsForm = () => {
           </button>
         )}
       </div>
-     <div className="lg:w-1/2">
+      <div className="lg:w-1/2">
         <h1>Get your personalized diet plan</h1>
-        <button className="btn-dark mt-5 center" onClick={() => setShowSuggestions(!showSuggestions)}>
-            Get Diet Plan
-          </button>
-          {showSuggestions && <SuggestionsComponent />}   
-
-     </div>
-     
+        <button
+          className="btn-dark mt-5 center"
+          onClick={() => handleSuggestion()}
+        >
+          Get Diet Plan
+        </button>
+        {loading ? (
+          <div className="w-full h-[80vh] flex justify-center items-center">
+            <Blocks
+              height="80"
+              width="80"
+              color="#4fa94d"
+              ariaLabel="blocks-loading"
+              wrapperStyle={{}}
+              wrapperClass="blocks-wrapper"
+              visible={true}
+            />
+          </div>
+        ) : (
+          showSuggestions && <SuggestionsComponent data={suggestionData} />
+        )}
+      </div>
     </div>
   );
 };

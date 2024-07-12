@@ -8,6 +8,8 @@ import PublicRoute from "./PublicRoutes";
 import ExerciseDetail from "../components/ExerciseDetail";
 import UserDetailsForm from "../components/UserDetail";
 import AskQuestions from "../components/AskQuestions";
+import ForgotPassword from "../components/ForgotPassword";
+import UpdatePassword from "../components/UpdatePassword";
 export default function CustomRoutes() {
   return (
     <>
@@ -15,7 +17,7 @@ export default function CustomRoutes() {
         <Route
           path="/"
           element={
-          <PrivateRoute>
+            <PrivateRoute>
               <Home />
             </PrivateRoute>
           }
@@ -42,7 +44,8 @@ export default function CustomRoutes() {
             <PrivateRoute>
               <UserDetailsForm />
             </PrivateRoute>
-          }/>
+          }
+        />
         <Route
           path="/register"
           element={
@@ -62,7 +65,8 @@ export default function CustomRoutes() {
         />
 
         <Route path="/verify" element={<OTPValidationPage />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/update-password" element={<UpdatePassword />} />
         <Route
           path="/forgot-password"
           element={<UserAuthForm type="forgot-password" />}
