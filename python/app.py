@@ -17,7 +17,7 @@ google_api_key = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=google_api_key)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 # Initialize the Gemini model
 llm_resto = GoogleGenerativeAI(model="gemini-pro", temperature=0.6)
